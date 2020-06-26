@@ -75,10 +75,10 @@ EMPLOYEE_CSV = ['employees.csv', 'departments.csv', 'dept_emp.csv', 'dept_manage
 REQUIRED_PACKAGES = { 'pip' : 'pip'}
 REQUIRED_MODULES = {'psycopg2' : 'psycopg2'}
 
-# Infor about the current OS enviroment
+# Infor about the current OS environment
 env = None
 
-# Class that information about the current Os enviroment
+# Class that information about the current Os environment
 class System():
     os_name = None
 
@@ -154,9 +154,9 @@ def check_for_packages():
     print_dot(DOT_RANGE[2])
     clear(0)
 
-# @note: Function attempts to import the the required module
+# @note: Function attempts to import the required module
 #       in the current version of python
-# @exception: ModuleNotFoundError   action: download and install currect module
+# @exception: ModuleNotFoundError   action: download and install current  module
 def import_modules():
     # Import the "Database Driver" library to connect to the database.
     global psycopg2
@@ -276,7 +276,7 @@ def read_postgress_settings():
 
     clear(0)
     
-# @note: Function establishes a connection with the postgress server and returns the connection
+# @note: Function establishes a connection with the postgres server and returns the connection
 #
 # @return   postgres server connector
 def establish_server_con():
