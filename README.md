@@ -2,6 +2,8 @@
 ```diff
 	This program creates PH-Employee tables and attempts to import the
 	the csv file data into the tables.
+
+@@	executable: ###<emp_execute.py>
 	
 	hint: program performs quicker in the os shell than the 'Python IDLE shell'
 		Expect long [run time] of approximately 30 minutes or more.
@@ -32,11 +34,11 @@
 				Do Not run any sql command in the DB while the program is still executing.
 				Do Not open the csv files while the program is executing.
 ```			  
-Submitted by: ## <Raul Rivero Rubio>
+Submitted by: Raul Rivero Rubio
 
 Postgress Driver [Default] Settings.
 ```diff
-+ green words are not included on the file.
++ green words are not included in the file.
 ```
 <img src='./readme_info/postgress_settings.PNG' title='Postgress Driver Settings [Default]' alt='Postgress Driver Settings [Default]' />
 
