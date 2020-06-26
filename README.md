@@ -6,8 +6,8 @@
 	hint: program performs quicker in the os shell than the 'Python IDLE shell'
 		Expect long [run time] of approximately 30 minutes or more.
 
-	```diff
-		+ REQUIRED
+```diff
++ 				REQUIRED
 		Step 1) Have the [Postgres] DB Server running.
 		Step 2) Make sure that the [PH-EmployeeDB] have been created. It must exists and must be named correctly.
 				This DB name is include in 'postgress_settings.txt' for the program.
@@ -29,8 +29,8 @@
 				Any incorrectly formated date could crash the program.
 				Any numeric value beyond table column capacity could also crash the program.
 				
-		```diff
-			! WARNING: 
+```diff
+! 				WARNING: 
 				Do Not run any sql command in the DB while the program is still executing.
 				Do Not open the csv files while the program is executing.
 			  
