@@ -32,7 +32,7 @@
 				Do Not run any sql command in the DB while the program is still executing.
 				Do Not open the csv files while the program is executing.
 ```			  
-Submitted by: # <Raul Rivero Rubio>
+Submitted by: # Raul Rivero Rubio
 
 Postgress Driver [Default] Settings.
 ```diff
