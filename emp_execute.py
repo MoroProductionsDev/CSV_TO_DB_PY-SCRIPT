@@ -5,10 +5,6 @@
 #       This program creates PH-Employee tables and attempts to import the
 #       the csv file data into the tables.
 
-#       step 1) pip install psycopg2
-#               (Using the Python library  Postgres (or PostgreSQL))
-
-
 # src:https://www.dataquest.io/blog/loading-data-into-postgres/
 
 # local dependencies
@@ -21,6 +17,7 @@ import csv
 import platform
 import importlib
 import re
+import pkg_resources
 from enum import IntEnum
 
 # will hold the postgres server module 
@@ -36,6 +33,8 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+# this works with tbe default buffer.
+# If the defualt buffer is reset, it does not work.
 
 #enums
 #src: https://docs.python.org/3/library/enum.html
@@ -47,8 +46,25 @@ class Employee_IDX(IntEnum):
     SALARIES = 4
     TITLES = 5
 
+#src: https://stackoverflow.com/questions/107705/disable-output-buffering
+class Unbuffered(object):
+   def __init__(self, stream):
+       self.stream = stream
+   def write(self, data):
+       self.stream.write(data)
+       self.stream.flush()
+   def writelines(self, datas):
+       self.stream.writelines(datas)
+       self.stream.flush()
+   def __getattr__(self, attr):
+       return getattr(self.stream, attr)
+
+import sys
+sys.stdout = Unbuffered(sys.stdout)
+
 # Global variables
 DELIMETER = ','
+DOT_RANGE= [1, 2, 3, 4, 5]
 POSTGRESS_FILENAME = 'postgress_settings.txt'
 postgress_keys = ['host', 'dbname', 'user', 'port']
 postgress_dict = {}
@@ -82,7 +98,7 @@ def main():
     global env      # Global var for the OS enviroment
     env = System()  # instance of the current OS
 
-    header():
+    header()
 
     import_modules()    # attempt to import the required module(s)
     
@@ -91,7 +107,7 @@ def main():
         con = establish_server_con()    # establish a connection and return a setting
 
         if menu() == 1:
-            check_for_packages();
+            check_for_packages()
             check_for_modules()
             create_tables(con)
             insert_data_csv_to_table(con)
@@ -100,11 +116,15 @@ def main():
             
         close_server_con(con);  # close the connection    
     except psycopg2.Error as e:
-        print(f"{bcolors.FAIL}EXCEPTION: main()\n{e}")
+        print(f"EXCEPTION: main()\n{e}")
+        close_server_con(con);  # close the connection
+        print('Exiting the program', end='')
+        exit()
 
-    print(f"{bcolors.HEADER}")
     print('Exiting the program', end='')
-    print_dot_dot_dot()
+    print_dot(DOT_RANGE[2])
+    clear(0)
+    
 
 # @note: Function checks if the required packages are installed
 #       in the current version of python
@@ -131,9 +151,8 @@ def check_for_packages():
         os.system(command);
         
     print('continue', end='')
-    print_dot_dot_dot()
-    print()
-    clear(2)
+    print_dot(DOT_RANGE[2])
+    clear(0)
 
 # @note: Function attempts to import the the required module
 #       in the current version of python
@@ -145,7 +164,12 @@ def import_modules():
     try:
         import psycopg2 
     except ModuleNotFoundError:
-        install_module('psycopg2') 
+        install_module('psycopg2')
+        
+        print('continue', end='')
+        print_dot(DOT_RANGE[2])
+        clear(0)
+
 
 # @note: Function checks for the required module
 def check_for_modules():
@@ -159,24 +183,28 @@ def check_for_modules():
             print(f'module \'{req_mod}\' found\n')
         else:
             install_module(req_mod)
-    clear(2)
+    print('continue', end='')
+    print_dot(DOT_RANGE[2])
+    clear(0)
 
 # @note: Function downloads and required current module
 #
 # @param: arg   the argument for the command to download and
 #               install the module
 def install_module(arg):
+    # Import the "Database Driver" library to connect to the database.
+    global psycopg2
+    
     command = 'pip install '
     
-    print('installing module: [{arg}]')
+    print(f'installing module: [{arg}]')
     os.system(command + arg)
-
-    print('continue ', end='')
-    print_dot_dot_dot()
-    print()
+    
+    import psycopg2  
 
 # @note: Program header information
 def header():
+    clear(0)
     print('title: PH-EmployeeDB: CSV -> DB TABLES\n'\
           'author: Raul Rivero Rubio (TA)\n\n')
     time.sleep(1)
@@ -201,12 +229,14 @@ def menu():
                 '(1)\tCreate All tables of [PH-EmployeeDB] and\n\tImport csv data into the tables\n'\
                 '(2)\tDelete All tables of [PH-EmployeeDB] -> ').strip())
                 if(option == 0):
-                    print('exiting...')
+                    print('exiting', end='')
+                    print_dot(DOT_RANGE[0])
+                    clear(0)
                     exit() 
                 elif (option != 1 and option != 2):
                     print(f'INVALID: Only the number (1) or (2) is allowed! [{option}]\n')
             except ValueError as valerr:
-                print(f"{bcolors.FAIL}EXCEPTION: option()\nMust be a [NUMERIC] value!\n")
+                print("EXCEPTION: option()\nMust be a [NUMERIC] value!\n")
                 clear(2)
         if option == 1:
             confirmed = True
@@ -217,14 +247,14 @@ def menu():
                 confirmed = False
             else:
                 confirmed = True
-        clear(1)
-    clear(0)
+        clear(2)
 
     return option
 
 # @note: Function reads the file setting properties and stores it a
 # global (postgress) dictionary
 def read_postgress_settings():
+    exit = 0
     print(f'Reading from the \"{POSTGRESS_FILENAME}\" file for\n'\
           'the postgress driver settings...\n')
     try:
@@ -234,15 +264,17 @@ def read_postgress_settings():
             postgress_dict.update({postgress_keys[i]: line.rstrip('\n')}) # get rid of the newline
 
         print('Data fetch\t[Successful]')
-        print('closing file...')
+        print('closing file', end='')
+        print_dot(DOT_RANGE[2])
         
         file.close()    # close the file 
     except FileNotFoundError:
         print(f'EXCEPTION: read_postgress_settings()\nNo such file or directory: {POSTGRESS_FILENAME}')
-        print('exiting...')
+        print('exiting', end='')
+        print_dot(DOT_RANGE[2])
         exit()
 
-    clear(1)
+    clear(0)
     
 # @note: Function establishes a connection with the postgress server and returns the connection
 #
@@ -263,18 +295,20 @@ def establish_server_con():
         except:
             attpt_cnt += 1
             print(f'Password authentication failed for user [{postgress_dict["user"]}]')
-            clear(1)
+            clear(2)
 
     if(attpt_cnt > MAX_ATTEMPT):
         print(f'\nSurpassed the MAXIMUM ATTEMPTS: {MAX_ATTEMPT}')
-        print('Abort: exiting...')
+        print('Abort: exiting')
+        print_dot(DOT_RANGE[2])
+        clear(0)
         exit()
     
-    print('\nServer Connection Established...\t[Successful]')
+    print('\nServer Connection Established\t[Successful]')
     print(con)
-    print(f'continue', end='')
-    print_dot_dot_dot()
-    print()
+    print('continue', end='')
+    print_dot(DOT_RANGE[2])
+    clear(0)
     
     return con
 
@@ -286,12 +320,13 @@ def close_server_con(con):
     # Variable has an establish connection with the database server
     con.close()
     print('Server Connection Closed!\t[Successful]\n')
+    time.sleep(1)
 
 # @note: Function creates database for the 'PH-EMPLOYEEDB'
 # @param    con     connector.
 def create_database_name(con):
     # Variable Cursor object with a stringified SQL command.
-    cur = con.cursor();
+    cur = con.cursor()
 
     #Preparing query to create a database
     sql = '''CREATE DATABASE "PH-EMPLOYEEDB"'''
@@ -304,10 +339,10 @@ def create_database_name(con):
 # @param    con     connector.
 def create_tables(con):
     # Variable Cursor object with a stringified SQL command.
-    cur = con.cursor();
+    cur = con.cursor()
       
     print('IF NOT EXISTS ', end='')
-    print_dot_dot_dot()
+    print_dot(DOT_RANGE[1])
     
     # Creating tables for PH-EmployeeDB
     for enum in Employee_IDX:
@@ -316,28 +351,29 @@ def create_tables(con):
     print('Completed!\t[Successful]\n')
 
     # commit the transaction
-    con.commit();
+    con.commit()
 
-    clear(1)
+    clear(2)
 
 # @note: Function deletes all required tables for the 'PH-EMPLOYEEDB database including
 #           the integral relations between them.
 # @param    con     connector.
 def delete_tables(con):
     # Variable Cursor object with a stringified SQL command.
-    cur = con.cursor();
+    cur = con.cursor()
 
     print('IF EXISTS ', end='')
-    print_dot_dot_dot()
+    print_dot(DOT_RANGE[1])
+
     for enum in Employee_IDX:
         cur.execute(EMPDATA.SQL_STATEMENT['Drop'][enum.value])
         print(f'\tDrop: \"{EMPLOYEE_TABLES[enum.value]}\"')
     print('Completed!\t[Successful]\n')
 
     # commit the transaction
-    con.commit();
+    con.commit()
 
-    clear(1)
+    clear(2)
 
 # @note: Function inserts data from csv to tables of the 'PH-EMPLOYEEDB' database
 # @param    con     connector.
@@ -347,8 +383,8 @@ def insert_data_csv_to_table(con):
 
     # iterate throug all required csv files
     for i in range(0, len(EMPLOYEE_CSV)):
-        print(f'Inserting in {EMPLOYEE_TABLES[i]}', 'end')
-        print_dot_dot_dot()
+        print(f'Inserting in table [{EMPLOYEE_TABLES[i]}]', end='')
+        print_dot(DOT_RANGE[2])
         with open(os.path.join('.', 'csv', EMPLOYEE_CSV[i])) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter = DELIMETER)
             row_count = sum(1 for row in csv_reader) - 1
@@ -368,13 +404,13 @@ def insert_data_csv_to_table(con):
             elif Employee_IDX.TITLES == i:
                 into_titles(cur, EMPLOYEE_CSV[i], row_count)
 
-        print(f'continue', end='')
-        print_dot_dot_dot()
+        print('continue', end='')
+        print_dot(DOT_RANGE[2])
         print()
         clear(0)
 
     con.commit() # commit the insertion if there is not errors
-    print('Inseted!\t[Successful]\n')
+    print('Inserted!\t[Successful]\n')
 
     clear(3)
 
@@ -382,7 +418,7 @@ def insert_data_csv_to_table(con):
 # @param    con     connector.
 # @param    filename    the csv filename
 # @param    r_count     total count of rows in the csv file  
-def employees(cur, filename, r_count):
+def into_employees(cur, filename, r_count):
     COLUMN_COUNT = 6
     start = 1; # skip header
 
@@ -439,12 +475,12 @@ def into_departments(cur, filename, r_count):
     with open(os.path.join('.', 'csv', filename)) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = DELIMETER)
 
-        for i, record in enumerate(csv_reader):
+        for r, record in enumerate(csv_reader):
             #skip the header row
-            if(i < start):
+            if(r < start):
                 continue            
                        
-            for c, cell in enumerate(record)::
+            for c, cell in enumerate(record):
                 empval[c] = cell
                 
 
@@ -474,9 +510,9 @@ def into_dept_emp(cur, filename, r_count):
     with open(os.path.join('.', 'csv', filename)) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = DELIMETER)
         
-        for i, record in enumerate(csv_reader):
+        for r, record in enumerate(csv_reader):
             #skip the header row
-            if(i < start):
+            if(r < start):
                 continue   
 
             for c, cell in enumerate(record):
@@ -512,10 +548,9 @@ def into_dept_manager(cur, filename, r_count):
 
     with open(os.path.join('.', 'csv', filename)) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = DELIMETER)
-
-        for i, record in enumerate(csv_reader):
+        for r, record in enumerate(csv_reader):
             #skip the header row
-            if(i < start):
+            if(r < start):
                 continue   
 
             for c, cell in enumerate(record):
@@ -552,9 +587,9 @@ def into_salaries(cur, filename, r_count):
     with open(os.path.join('.', 'csv', filename)) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = DELIMETER)
 
-        for i, record in enumerate(csv_reader):
+        for r, record in enumerate(csv_reader):
             #skip the header row
-            if(i < start):
+            if(r < start):
                 continue   
 
             for c, cell in enumerate(record):
@@ -591,9 +626,9 @@ def into_titles(cur, filename, r_count):
     with open(os.path.join('.', 'csv', filename)) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = DELIMETER)
 
-        for i, record in enumerate(csv_reader):
+        for r, record in enumerate(csv_reader):
             #skip the header row
-            if(i < start):
+            if(r < start):
                 continue
             
             for c, cell in enumerate(record):
@@ -617,12 +652,16 @@ def clear(sec):
     env.console_clear()
     
 # @note: Function prints 3 dots animation on the same line
-def print_dot_dot_dot():
-    for i in range(0, 3):
-        print('.', end='')
-        time.sleep(1)
+def print_dot(dot_range):
+    for i in range(0, dot_range):
+        for j in range(0, dot_range):
+            print('.', end='')
+            time.sleep(0.3)
+        if i < dot_range - 1:
+            for k in range(0, dot_range):
+                print('\b \b', end='')
+            time.sleep(0.3)
     print()
-
 
 # Execute the main function to begin the program
 # src: https://realpython.com/python-main-function/
