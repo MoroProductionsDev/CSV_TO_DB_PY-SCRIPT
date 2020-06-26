@@ -3,7 +3,7 @@
 	This program creates PH-Employee tables and attempts to import the
 	the csv file data into the tables.
 
-@@	executable: ###<emp_execute.py>
+@@	executable: ###<emp_execute.py>@@
 	
 	hint: program performs quicker in the os shell than the 'Python IDLE shell'
 		Expect long [run time] of approximately 30 minutes or more.
