@@ -6,7 +6,8 @@
 	hint: program performs quicker in the os shell than the 'Python IDLE shell'
 		Expect long [run time] of approximately 30 minutes or more.
 
-	* <span style="color:blue">REQUIRED</span>:
+	```diff
+		+ REQUIRED
 		Step 1) Have the [Postgres] DB Server running.
 		Step 2) Make sure that the [PH-EmployeeDB] have been created. It must exists and must be named correctly.
 				This DB name is include in 'postgress_settings.txt' for the program.
@@ -28,20 +29,17 @@
 				Any incorrectly formated date could crash the program.
 				Any numeric value beyond table column capacity could also crash the program.
 				
-		<span style="color:orange">WARNING</span>: Do Not run any sql command in the DB while the program is still executing.
-				 Do Not open the csv files while the program is executing.
+		```diff
+			! WARNING: 
+				Do Not run any sql command in the DB while the program is still executing.
+				Do Not open the csv files while the program is executing.
 			  
-Submitted by: <Raul Rivero Rubio>
-```diff
-- text in red
-+ text in green
-! text in orange
-# text in gray
-@@ text in purple (and bold)@@
-```
-+ testing colors
+Submitted by: # <Raul Rivero Rubio>
 
-Postgress Driver Settings [Default]. <span style="color:green">green</span words are not included on the file.
+Postgress Driver [Default] Settings.
+```diff
++ green words 
+are not included on the file.
 <img src='./readme_info/postgress_settings.PNG' title='Postgress Driver Settings [Default]' alt='Postgress Driver Settings [Default]' />
 
 Parent Directory of the Executable program.
