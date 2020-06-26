@@ -32,13 +32,12 @@
 				Do Not run any sql command in the DB while the program is still executing.
 				Do Not open the csv files while the program is executing.
 ```			  
-Submitted by: # Raul Rivero Rubio
+Submitted by: ## <Raul Rivero Rubio>
 
 Postgress Driver [Default] Settings.
 ```diff
-+ green words
++ green words are not included on the file.
 ```
-are not included on the file.
 <img src='./readme_info/postgress_settings.PNG' title='Postgress Driver Settings [Default]' alt='Postgress Driver Settings [Default]' />
 
 Parent Directory of the Executable program.
