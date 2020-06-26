@@ -1,0 +1,4 @@
+localhost
+PH-EmployeeDB
+postgres
+5432
