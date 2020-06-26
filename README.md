@@ -32,6 +32,14 @@
 				 Do Not open the csv files while the program is executing.
 			  
 Submitted by: <Raul Rivero Rubio>
+```diff
+- text in red
++ text in green
+! text in orange
+# text in gray
+@@ text in purple (and bold)@@
+```
++ testing colors
 
 Postgress Driver Settings [Default]. <span style="color:green">green</span words are not included on the file.
 <img src='./readme_info/postgress_settings.PNG' title='Postgress Driver Settings [Default]' alt='Postgress Driver Settings [Default]' />
