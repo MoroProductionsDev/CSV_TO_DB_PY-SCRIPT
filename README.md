@@ -21,7 +21,10 @@
 			  
 Submitted by: <Raul Rivero Rubio>
 
+Postgress Driver Settings [Default]. green words are not included on the file.
 <img src='./readme_info/postgress_settings.PNG' title='Postgress Driver Settings [Default]' alt='Postgress Driver Settings [Default] />
+
+Parent Directory of the Executable program.
 <img src='./readme_info/program_parent_directory.PNG' title='Parent Directory of the Executable program' alt='Postgress Driver Settings [Default]' />
 
 ## User Stories
